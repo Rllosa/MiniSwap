@@ -8,6 +8,26 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 )
 
+func deploySwapContract(auth *bind.TransactOpts, v *variables, baseTokenAddress common.Address, quoteTokenAddress common.Address) common.Address {
+	auth.GasLimit = uint64(8000000)
+
+	parsedABI, bytecode := getAbidataBytecode("./build/MiniSwap.abi", "./build/MiniSwap.bin")
+
+	address, tx, _, err := bind.DeployContract(auth, parsedABI, common.FromHex(string(bytecode)), v.client, baseTokenAddress, quoteTokenAddress)
+	handleError(err, "Failed to deploy contract")
+	waitMined(v.client, tx)
+
+	fmt.Print("\n-----> MiniSwap - Deployment <-----\n\n")
+
+	fmt.Printf("MiniSwap Contract deployed to address: %s\n", address.Hex())
+	fmt.Printf("Transaction hash: %s\n", tx.Hash().Hex())
+
+	fmt.Print("\n---------------------------------------\n\n")
+
+	v.nonce++
+	return address
+}
+
 func deployQuoteTokenContract(auth *bind.TransactOpts, v *variables, governanceTreasuryAddress string) common.Address {
 	auth.GasLimit = uint64(8000000)
 
@@ -74,7 +94,10 @@ func deployContracts(keys []string) (*variables, []common.Address, *bind.Transac
 	auth, v = deploymentSetup(keys[3])
 	quoteTokenAddress := deployQuoteTokenContract(auth, v, keys[18])
 
-	var addresses = []common.Address{baseTokenAddress, quoteTokenAddress}
+	auth, v = deploymentSetup(keys[5])
+	swapAddress := deploySwapContract(auth, v, baseTokenAddress, quoteTokenAddress)
+
+	var addresses = []common.Address{baseTokenAddress, quoteTokenAddress, swapAddress}
 
 	return v, addresses, auth
 }
