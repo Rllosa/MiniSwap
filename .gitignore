@@ -1,0 +1,7 @@
+go.sum
+ganache-output.txt
+.DS_Store
+.vscode
+.env
+/build
+/lib
