@@ -75,7 +75,7 @@ func cronService(client *ethclient.Client, db *sql.DB) {
 		FromBlock: big.NewInt(blockInfo.LatestBlockNum + 1),
 		ToBlock:   big.NewInt(endBlock),
 		Addresses: []common.Address{
-			common.HexToAddress(service.PairContractAdd),
+			common.HexToAddress(service.SwapContractAddress),
 		},
 	}
 
@@ -91,9 +91,9 @@ func cronService(client *ethclient.Client, db *sql.DB) {
 		switch vLog.Topics[0].Hex() {
 
 		case swapEvent:
-			service.InsertLimitOrder(vLog, client, db)
+			service.swapingEvent(vLog, client, db)
 		case burningEvent:
-			service.UpdateClaimOrder(vLog, client, db)
+			service.burningEvent(vLog, client, db)
 		}
 	}
 
