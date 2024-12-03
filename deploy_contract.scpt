@@ -6,7 +6,7 @@ tell application "iTerm2"
         create tab with default profile
         set newTab to current tab
         tell current session of newTab
-            write text "cd " & currentDir & " && ganache --gasLimit 120000000 --chain.chainId 11155420 > ganache-output.txt"
+            write text "cd " & currentDir & " && ganache --gasLimit 120000000 > ganache-output.txt"
         end tell
     end tell
     -- Switch back to the original tab

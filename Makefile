@@ -15,7 +15,7 @@ deployment:
 	@osascript deploy_contract.scpt
 
 run: 
-	@go run -ldflags "-X main.ENV=$(ENV)" main.go  deploy.go utils.go setup.go setEnvFiles.go interact.go
+	@go run -ldflags "-X main.ENV=$(ENV)" main.go  deploy.go utils.go setup.go setEnvFiles.go interact.go swap.go liquidity.go
 
 go:
 	@echo ""

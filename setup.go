@@ -37,7 +37,7 @@ func setup(input string) *variables {
 	nonce, err := client.PendingNonceAt(context.Background(), fromAddress)
 	handleError(err, "Failed to get nonce")
 
-	chainID := big.NewInt(11155420)
+	chainID := big.NewInt(1337)
 
 	return &variables{
 		client:     client,

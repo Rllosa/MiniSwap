@@ -35,7 +35,7 @@ func deployQuoteTokenContract(auth *bind.TransactOpts, v *variables, governanceT
 
 	name := "USDT"
 	symbol := "USDT"
-	decimal := uint8(6)
+	decimal := uint8(18)
 	tokenHolder := common.HexToAddress(governanceTreasuryAddress) // Replace with actual address
 	initialValue := new(big.Int).Mul(big.NewInt(30000000000000), big.NewInt(1e6))
 	address, tx, _, err := bind.DeployContract(auth, parsedABI, common.FromHex(string(bytecode)), v.client, name, symbol, tokenHolder, decimal, initialValue)
