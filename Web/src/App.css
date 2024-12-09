@@ -37,7 +37,6 @@
   }
 }
 
-/* General Container */
 .app-container {
   font-family: 'Arial', sans-serif;
   background-color: #f9f9f9;
@@ -46,7 +45,6 @@
   flex-direction: column;
 }
 
-/* Navigation Bar */
 .navbar {
   display: flex;
   justify-content: space-between;
@@ -78,7 +76,6 @@
   color: #ffdd57;
 }
 
-/* App Content */
 .app-content {
   padding: 20px;
   flex: 1;

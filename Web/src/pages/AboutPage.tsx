@@ -1,5 +1,5 @@
 import React from 'react';
-import './AboutPage.css'; // Import the CSS file
+import './AboutPage.css';
 
 const AboutPage = () => {
   const roadmap = [

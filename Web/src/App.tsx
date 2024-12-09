@@ -2,7 +2,7 @@ import React from 'react';
 import { Routes, Route, Link } from 'react-router-dom';
 import HomePage from './pages/HomePage';
 import AboutPage from './pages/AboutPage';
-import './App.css'; // Import the CSS file
+import './App.css';
 
 const App = () => {
   return (

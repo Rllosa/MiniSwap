@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import './HomePage.css'; // Import the CSS file
+import './HomePage.css';
 
 const HomePage = () => {
   const [walletConnected, setWalletConnected] = useState<boolean>(false);
@@ -8,13 +8,11 @@ const HomePage = () => {
   const [amount, setAmount] = useState<string>('');
   const [status, setStatus] = useState<string>('');
 
-  // Simulated Connect Wallet Function
   const connectWallet = () => {
     setWalletConnected(true);
     setStatus('Wallet connected (simulation)');
   };
 
-  // Simulated Swap Logic
   const handleSwap = () => {
     if (!walletConnected) {
       setStatus('Please connect your wallet first.');
