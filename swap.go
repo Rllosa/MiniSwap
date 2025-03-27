@@ -41,18 +41,7 @@ func performSwap() {
 	quoteTokenInstance := bind.NewBoundContract(quoteTokenAddress, parsedQuoteTokenABI, client, client, client)
 
 	// Print initial balances
-	var wethBalance []interface{}
-	var usdtBalance []interface{}
-
-	err = baseTokenInstance.Call(&bind.CallOpts{}, &wethBalance, "balanceOf", userKey)
-	handleError(err, "Failed to get WETH balance")
-
-	err = quoteTokenInstance.Call(&bind.CallOpts{}, &usdtBalance, "balanceOf", userKey)
-	handleError(err, "Failed to get USDT balance")
-
-	fmt.Printf("\nInitial Balances:\n")
-	fmt.Printf("WETH: %v\n", new(big.Float).Quo(new(big.Float).SetInt(wethBalance[0].(*big.Int)), new(big.Float).SetInt64(1e18)))
-	fmt.Printf("USDT: %v\n", new(big.Float).Quo(new(big.Float).SetInt(usdtBalance[0].(*big.Int)), new(big.Float).SetInt64(1e18)))
+	printBalances(baseTokenInstance, quoteTokenInstance, userKey, "Initial")
 
 	// Setup the fake user's private key for transactions
 	fakeUserPrivateKey := os.Getenv("FAKEUSERPRIVATEKEY")
@@ -64,7 +53,7 @@ func performSwap() {
 	auth, err := bind.NewKeyedTransactorWithChainID(privateKey, chainID)
 	handleError(err, "Failed to create transactor")
 
-	// Get nonce
+	// Get initial nonce
 	nonce, err := client.PendingNonceAt(context.Background(), userKey)
 	handleError(err, "Failed to get nonce")
 
@@ -75,47 +64,86 @@ func performSwap() {
 	auth.GasPrice = big.NewInt(1000000000)
 	auth.From = userKey
 
-	// Approve tokens for swap
-	amountToSwap := new(big.Int).Mul(big.NewInt(1), new(big.Int).Exp(big.NewInt(10), big.NewInt(18), nil)) // 1 WETH
-	fmt.Printf("\nApproving %v WETH for swap...\n", new(big.Float).Quo(new(big.Float).SetInt(amountToSwap), new(big.Float).SetInt64(1e18)))
+	// Amount to swap (10 tokens)
+	amountToSwap := new(big.Int).Mul(big.NewInt(10), new(big.Int).Exp(big.NewInt(10), big.NewInt(18), nil))
 
+	// First Swap: Token1 -> Token2
+	fmt.Println("\n=== Performing Token1 -> Token2 Swap ===")
+
+	// Approve Token1
+	fmt.Printf("Approving %v Token1 for swap...\n", new(big.Float).Quo(new(big.Float).SetInt(amountToSwap), new(big.Float).SetInt64(1e18)))
 	tx, err := baseTokenInstance.Transact(auth, "approve", swapAddress, amountToSwap)
-	handleError(err, "Failed to approve WETH")
+	handleError(err, "Failed to approve Token1")
 	receipt, err := bind.WaitMined(context.Background(), client, tx)
-	handleError(err, "Failed waiting for WETH approval")
+	handleError(err, "Failed waiting for Token1 approval")
 	if receipt.Status == 0 {
-		log.Fatal("WETH approval failed")
+		log.Fatal("Token1 approval failed")
 	}
-	fmt.Println("✅ WETH approved")
+	fmt.Println("✅ Token1 approved")
 
 	// Update nonce
 	auth.Nonce = big.NewInt(int64(nonce + 1))
 
-	// Perform swap
-	fmt.Printf("\nPerforming swap...\n")
+	// Perform first swap
 	tx, err = swapInstance.Transact(auth, "swap", baseTokenAddress, amountToSwap)
-	handleError(err, "Failed to swap")
+	handleError(err, "Failed to swap Token1")
 	receipt, err = bind.WaitMined(context.Background(), client, tx)
-	handleError(err, "Failed waiting for swap")
+	handleError(err, "Failed waiting for Token1 swap")
 	if receipt.Status == 0 {
-		log.Fatal("Swap failed")
+		log.Fatal("Token1 swap failed")
 	}
-	fmt.Println("✅ Swap completed")
-	fmt.Printf("Swap Event ID: %s\n", getSwapEventID())
+	fmt.Println("✅ First swap completed")
+
+	// Print intermediate balances
+	printBalances(baseTokenInstance, quoteTokenInstance, userKey, "After first swap")
+
+	// Second Swap: Token2 -> Token1
+	fmt.Println("\n=== Performing Token2 -> Token1 Swap ===")
+
+	// Update nonce
+	auth.Nonce = big.NewInt(int64(nonce + 2))
+
+	// Approve Token2
+	fmt.Printf("Approving %v Token2 for swap...\n", new(big.Float).Quo(new(big.Float).SetInt(amountToSwap), new(big.Float).SetInt64(1e18)))
+	tx, err = quoteTokenInstance.Transact(auth, "approve", swapAddress, amountToSwap)
+	handleError(err, "Failed to approve Token2")
+	receipt, err = bind.WaitMined(context.Background(), client, tx)
+	handleError(err, "Failed waiting for Token2 approval")
+	if receipt.Status == 0 {
+		log.Fatal("Token2 approval failed")
+	}
+	fmt.Println("✅ Token2 approved")
+
+	// Update nonce
+	auth.Nonce = big.NewInt(int64(nonce + 3))
+
+	// Perform second swap
+	tx, err = swapInstance.Transact(auth, "swap", quoteTokenAddress, amountToSwap)
+	handleError(err, "Failed to swap Token2")
+	receipt, err = bind.WaitMined(context.Background(), client, tx)
+	handleError(err, "Failed waiting for Token2 swap")
+	if receipt.Status == 0 {
+		log.Fatal("Token2 swap failed")
+	}
+	fmt.Println("✅ Second swap completed")
 
 	// Print final balances
-	var weth2Balance []interface{}
-	var usdt2Balance []interface{}
+	printBalances(baseTokenInstance, quoteTokenInstance, userKey, "Final")
+}
 
-	err = baseTokenInstance.Call(&bind.CallOpts{}, &weth2Balance, "balanceOf", userKey)
-	handleError(err, "Failed to get final WETH balance")
+func printBalances(token1Instance, token2Instance *bind.BoundContract, userKey common.Address, label string) {
+	var token1Balance []interface{}
+	var token2Balance []interface{}
 
-	err = quoteTokenInstance.Call(&bind.CallOpts{}, &usdt2Balance, "balanceOf", userKey)
-	handleError(err, "Failed to get final USDT balance")
+	err := token1Instance.Call(&bind.CallOpts{}, &token1Balance, "balanceOf", userKey)
+	handleError(err, "Failed to get Token1 balance")
 
-	fmt.Printf("\nFinal Balances:\n")
-	fmt.Printf("WETH: %v\n", new(big.Float).Quo(new(big.Float).SetInt(weth2Balance[0].(*big.Int)), new(big.Float).SetInt64(1e18)))
-	fmt.Printf("USDT: %v\n", new(big.Float).Quo(new(big.Float).SetInt(usdt2Balance[0].(*big.Int)), new(big.Float).SetInt64(1e18)))
+	err = token2Instance.Call(&bind.CallOpts{}, &token2Balance, "balanceOf", userKey)
+	handleError(err, "Failed to get Token2 balance")
+
+	fmt.Printf("\n%s Balances:\n", label)
+	fmt.Printf("Token1: %v\n", new(big.Float).Quo(new(big.Float).SetInt(token1Balance[0].(*big.Int)), new(big.Float).SetInt64(1e18)))
+	fmt.Printf("Token2: %v\n", new(big.Float).Quo(new(big.Float).SetInt(token2Balance[0].(*big.Int)), new(big.Float).SetInt64(1e18)))
 }
 
 func getSwapEventID() string {

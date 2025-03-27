@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/Rllosa/miniSwap/backend/mysql"
+	service "github.com/Rllosa/miniSwap/backend/services"
 	"github.com/ethereum/go-ethereum"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/ethclient"
@@ -17,7 +18,7 @@ import (
 )
 
 const (
-	swapEvent     = "0xcd3829a3813dc3cdd188fd3d01dcf3268c16be2fdd2dd21d0665418816e46062"
+	swapEvent     = "0xd6d34547c69c5ee3d2667625c188acf1006abb93e0ee7cf03925c67cf7760413"
 	burningEvent  = ""
 	startBlock    = 0 // start block - 1 (since event log will add 1)
 	blockInterval = 100
@@ -29,7 +30,7 @@ func main() {
 }
 
 func runCronJobs() {
-	client, err := ethclient.Dial("http://127.0.0.1:8545")
+	client, err := ethclient.Dial(service.GlobalClient)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -75,7 +76,7 @@ func cronService(client *ethclient.Client, db *sql.DB) {
 		FromBlock: big.NewInt(blockInfo.LatestBlockNum + 1),
 		ToBlock:   big.NewInt(endBlock),
 		Addresses: []common.Address{
-			common.HexToAddress(service.SwapContractAddress),
+			common.HexToAddress(service.SwapContractAdd),
 		},
 	}
 
@@ -83,7 +84,7 @@ func cronService(client *ethclient.Client, db *sql.DB) {
 	if err != nil {
 		fmt.Println(err)
 	}
-
+	fmt.Println("AYA")
 	for _, vLog := range logs {
 
 		fmt.Println(vLog.Topics[0].Hex())
@@ -91,9 +92,9 @@ func cronService(client *ethclient.Client, db *sql.DB) {
 		switch vLog.Topics[0].Hex() {
 
 		case swapEvent:
-			service.swapingEvent(vLog, client, db)
+			service.SwapingEvent(vLog, client, db)
 		case burningEvent:
-			service.burningEvent(vLog, client, db)
+			service.BurningEvent(vLog, client, db)
 		}
 	}
 
