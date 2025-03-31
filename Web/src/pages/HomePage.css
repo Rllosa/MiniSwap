@@ -1,4 +1,3 @@
-
 .home-container {
   text-align: center;
   padding: 20px;
@@ -28,13 +27,15 @@
   font-size: 1.2rem;
 }
 
-.swap-input {
-  width: calc(100% - 20px);
-  padding: 10px;
-  margin-bottom: 15px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  font-size: 1rem;
+.swap-form {
+  background-color: #eef4ff;
+  padding: 25px;
+  border-radius: 12px;
+  box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.08);
+  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .home-button {
@@ -42,20 +43,75 @@
   color: white;
   padding: 10px 20px;
   border: none;
-  border-radius: 5px;
+  border-radius: 6px;
   font-size: 1rem;
   cursor: pointer;
   transition: background-color 0.3s ease;
+  margin: 5px;
 }
 
 .home-button:hover {
   background-color: #0056b3;
 }
 
-.swap-form {
-  background-color: #fff;
-  padding: 20px;
-  border-radius: 10px;
-  box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
+.switch-button {
+  background-color: #6c63ff;
+  align-self: flex-end;
+  margin-bottom: 15px;
 }
-  
+
+.switch-button:hover {
+  background-color: #574fd8;
+}
+
+.wallet-summary {
+  margin-top: 30px;
+  background-color: #ffffff;
+  padding: 15px 25px;
+  border-radius: 10px;
+  box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.05);
+  display: flex;
+  justify-content: space-around;
+  gap: 20px;
+}
+
+.wallet-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.wallet-label {
+  font-weight: bold;
+  font-size: 1rem;
+  color: #333;
+  margin-bottom: 4px;
+}
+
+.wallet-value {
+  font-size: 1.2rem;
+  color: #007bff;
+}
+
+.message {
+  padding: 12px 20px;
+  margin: 10px auto;
+  border-radius: 6px;
+  max-width: 400px;
+  font-size: 1rem;
+  font-weight: 500;
+  text-align: center;
+  transition: all 0.3s ease;
+}
+
+.message.success {
+  background-color: #d4edda;
+  color: #155724;
+  border: 1px solid #c3e6cb;
+}
+
+.message.error {
+  background-color: #f8d7da;
+  color: #721c24;
+  border: 1px solid #f5c6cb;
+}

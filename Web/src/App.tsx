@@ -8,7 +8,7 @@ const App = () => {
   return (
     <div className="app-container">
       <nav className="navbar">
-        <div className="navbar-logo">My Project</div>
+        <div className="navbar-logo">SwapToken</div>
         <div className="navbar-links">
           <Link to="/" className="nav-link">Home</Link>
           <Link to="/about" className="nav-link">About</Link>
