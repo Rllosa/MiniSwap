@@ -3,9 +3,9 @@ import './HomePage.css';
 
 const HomePage = () => {
   const [walletConnected, setWalletConnected] = useState<boolean>(false);
-  const [tokenA, setTokenA] = useState<string>('');
-  const [tokenB, setTokenB] = useState<string>('');
-  const [amount, setAmount] = useState<string>('');
+  const [tokenETH, setTokenETH] = useState<number | undefined>(undefined);
+  const [walletContent, setWalletContent] = useState<number | undefined>(undefined);
+  const [wallet2Content, setWallet2Content] = useState<number | undefined>(undefined);
   const [status, setStatus] = useState<string>('');
 
   const connectWallet = () => {
@@ -14,20 +14,11 @@ const HomePage = () => {
   };
 
   const handleSwap = () => {
-    if (!walletConnected) {
-      setStatus('Please connect your wallet first.');
-      return;
+    // Placeholder for backend
+    if (tokenETH) {
+      setWalletContent(tokenETH);
+      setWallet2Content((tokenETH - (0.002 * tokenETH)));
     }
-
-    if (!tokenA || !tokenB || !amount) {
-      setStatus('Please fill all fields.');
-      return;
-    }
-
-    setStatus(`Simulating swap: ${amount} of Token A (${tokenA}) to Token B (${tokenB})`);
-    setTimeout(() => {
-      setStatus('Swap simulation complete!');
-    }, 1500);
   };
 
   return (
@@ -42,25 +33,24 @@ const HomePage = () => {
       ) : (
         <div className="swap-form">
           <p className="wallet-status">Wallet connected (simulated).</p>
-          <input
-            type="text"
-            placeholder="Token A Address"
-            value={tokenA}
-            onChange={(e) => setTokenA(e.target.value)}
-            className="swap-input"
-          />
-          <input
-            type="text"
-            placeholder="Token B Address"
-            value={tokenB}
-            onChange={(e) => setTokenB(e.target.value)}
-            className="swap-input"
-          />
+          <p>ETH Amount Value</p>
           <input
             type="number"
-            placeholder="Amount to Swap"
-            value={amount}
-            onChange={(e) => setAmount(e.target.value)}
+            placeholder="ETH Amount"
+            value={tokenETH ? tokenETH : ""}
+            onChange={(e) => {
+              const value = Number(e.target.value);
+              if (!isNaN(value)) {
+                setTokenETH(value);
+              }
+            }}
+            className="swap-input"
+          />
+          <p>USDT Amount conversion</p>
+          <input
+            type="number"
+            placeholder="USDT Amount"
+            value={tokenETH ? (tokenETH - (0.002 * tokenETH)) : ""}
             className="swap-input"
           />
           <button className="home-button" onClick={handleSwap}>
@@ -68,6 +58,8 @@ const HomePage = () => {
           </button>
         </div>
       )}
+      <p>{walletContent ? "Your ETH wallet amount : " + walletContent : "We did not receive your ETH wallet infos."}</p>
+      <p>{walletContent ? "Your USDT wallet amount : " + wallet2Content : "We did not receive your USDT wallet infos."}</p>
     </div>
   );
 };
