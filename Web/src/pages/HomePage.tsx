@@ -50,6 +50,7 @@ const HomePage = () => {
           <input
             type="number"
             placeholder="USDT Amount"
+            readOnly
             value={tokenETH ? (tokenETH - (0.002 * tokenETH)) : ""}
             className="swap-input"
           />
