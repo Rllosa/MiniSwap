@@ -98,10 +98,10 @@ const HomePage = () => {
     ) : (
       <div className="swap-form">
         <button className="home-button switch-button" onClick={handleSwitch}>
-          Switch to {isEthToUsdt ? "USDT → ETH" : "ETH → USDT"}
+          Switch mode to {isEthToUsdt ? "(USDT → ETH)" : "(ETH → USDT)"}
         </button>
   
-        <p className="wallet-status">Wallet connected (simulated).</p>
+        <p className="wallet-status">Wallet connected.</p>
   
         <p>{isEthToUsdt ? "ETH Amount Value" : "USDT Amount Value"}</p>
         <input
