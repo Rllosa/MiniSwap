@@ -1,23 +1,52 @@
-import React, { useState } from 'react';
-import './HomePage.css';
+import React, { useState } from "react";
+import "./HomePage.css";
 
 const HomePage = () => {
   const [walletConnected, setWalletConnected] = useState<boolean>(false);
   const [tokenETH, setTokenETH] = useState<number | undefined>(undefined);
-  const [walletContent, setWalletContent] = useState<number | undefined>(undefined);
-  const [wallet2Content, setWallet2Content] = useState<number | undefined>(undefined);
-  const [status, setStatus] = useState<string>('');
+  const [walletContent, setWalletContent] = useState<number | undefined>(
+    undefined
+  );
+  const [wallet2Content, setWallet2Content] = useState<number | undefined>(
+    undefined
+  );
+  const [status, setStatus] = useState<string>("");
 
-  const connectWallet = () => {
-    setWalletConnected(true);
-    setStatus('Wallet connected (simulation)');
+  const connectWallet = async () => {
+    try {
+      const response = await fetch("http://localhost:8080/getBalance");
+
+      if (!response.ok) {
+        throw new Error(`Erreur ${response.status} : ${response.statusText}`);
+      }
+      const json = await response.json();
+      setWalletContent(json.token1);
+      setWallet2Content(json.amount);
+
+      setWalletConnected(true);
+      setStatus("Wallet connected (simulation)");
+    } catch (err) {
+      console.log(err);
+    }
   };
 
-  const handleSwap = () => {
+  const handleSwap = async () => {
     // Placeholder for backend
-    if (tokenETH) {
-      setWalletContent(tokenETH);
-      setWallet2Content((tokenETH - (0.002 * tokenETH)));
+    if (tokenETH && walletContent && wallet2Content) {
+      try {
+        const response = await fetch(
+          "http://localhost:8080/swap?amount=" + tokenETH + "&token=base"
+        );
+
+        if (!response.ok) {
+          throw new Error(`Erreur ${response.status} : ${response.statusText}`);
+        }
+        const json = await response.json();
+        setWalletContent(json.token1);
+        setWallet2Content(json.token2);
+      } catch (err) {
+        console.log(err);
+      }
     }
   };
 
@@ -40,7 +69,7 @@ const HomePage = () => {
             value={tokenETH ? tokenETH : ""}
             onChange={(e) => {
               const value = Number(e.target.value);
-              if (!isNaN(value)) {
+              if (!isNaN(value) && walletContent && value <= walletContent) {
                 setTokenETH(value);
               }
             }}
@@ -51,7 +80,7 @@ const HomePage = () => {
             type="number"
             placeholder="USDT Amount"
             readOnly
-            value={tokenETH ? (tokenETH - (0.002 * tokenETH)) : ""}
+            value={tokenETH ? tokenETH - 0.002 * tokenETH : ""}
             className="swap-input"
           />
           <button className="home-button" onClick={handleSwap}>
@@ -59,8 +88,16 @@ const HomePage = () => {
           </button>
         </div>
       )}
-      <p>{walletContent ? "Your ETH wallet amount : " + walletContent : "We did not receive your ETH wallet infos."}</p>
-      <p>{walletContent ? "Your USDT wallet amount : " + wallet2Content : "We did not receive your USDT wallet infos."}</p>
+      <p>
+        {walletContent
+          ? "Your ETH wallet amount : " + walletContent
+          : "We did not receive your ETH wallet infos."}
+      </p>
+      <p>
+        {walletContent
+          ? "Your USDT wallet amount : " + wallet2Content
+          : "We did not receive your USDT wallet infos."}
+      </p>
     </div>
   );
 };
