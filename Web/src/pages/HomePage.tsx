@@ -6,7 +6,6 @@ const HomePage = () => {
   const [tokenAmount, setTokenAmount] = useState<number | undefined>(undefined);
   const [walletContent, setWalletContent] = useState<number | undefined>(undefined);
   const [wallet2Content, setWallet2Content] = useState<number | undefined>(undefined);
-  const [status, setStatus] = useState<string>("");
   const [isEthToUsdt, setIsEthToUsdt] = useState<boolean>(true);
 
   const [message, setMessage] = useState<string | null>(null);
@@ -35,7 +34,6 @@ const HomePage = () => {
       setWallet2Content(json.amount);
   
       setWalletConnected(true);
-      setStatus("Wallet connected (simulation)");
       showMessage("Wallet connected successfully!", "success");
     } catch (err) {
       console.log(err);
@@ -86,7 +84,6 @@ const HomePage = () => {
   return (
     <div className="home-container">
     <h1 className="home-title">Token Swap</h1>
-    <p className="home-status">{status}</p>
 
     {message && (
       <div className={`message ${messageType}`}>
