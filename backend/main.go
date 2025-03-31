@@ -84,7 +84,6 @@ func cronService(client *ethclient.Client, db *sql.DB) {
 	if err != nil {
 		fmt.Println(err)
 	}
-	fmt.Println("AYA")
 	for _, vLog := range logs {
 
 		fmt.Println(vLog.Topics[0].Hex())
