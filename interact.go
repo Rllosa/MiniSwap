@@ -196,7 +196,7 @@ func setUserWallet() {
 
 	// Mint WETH (18 decimals)
 	fmt.Println("Minting WETH...")
-	wethAmount := new(big.Int).Mul(big.NewInt(1000), new(big.Int).Exp(big.NewInt(10), big.NewInt(17), nil))
+	wethAmount := new(big.Int).Mul(big.NewInt(10000), new(big.Int).Exp(big.NewInt(10), big.NewInt(18), nil))
 	tx, err = baseTokenInstance.Transact(auth, "mint", userKey, wethAmount)
 	handleError(err, "Failed to mint WETH")
 	receipt, err = bind.WaitMined(context.Background(), client, tx)
@@ -208,8 +208,8 @@ func setUserWallet() {
 
 	fmt.Printf("\nTokens minted successfully!\n")
 	fmt.Printf("Amounts minted to %s:\n", userKey.Hex())
-	fmt.Printf("- WETH: 9.2 (18 decimals)\n")
-	fmt.Printf("- USDT: 650 (18 decimals)\n")
+	fmt.Printf("- WETH: 1000 (18 decimals)\n")
+	fmt.Printf("- USDT: 1000 (18 decimals)\n")
 
 	// Print final balances
 	var wethBalance []interface{}
